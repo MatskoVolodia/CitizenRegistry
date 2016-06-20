@@ -21,84 +21,83 @@
             registry = CreateCitizenRegistry();
         }
 
-        //[TestMethod]
-        //[ExpectedException(typeof(InvalidOperationException))]
-        //public void Register_ForAlreadyRegisteredVatId_ThrowsInvalidOperationException()
-        //{
-        //    string vatId = TestVatIdForMan;
-        //    var citizen1 = CitizenBuilder.NewMan().WithVatId(vatId).Build();
-        //    var citizen2 = CitizenBuilder.NewMan().WithVatId(vatId).Build();
-        //    registry.Register(citizen1);
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void Register_ForAlreadyRegisteredVatId_ThrowsInvalidOperationException()
+        {
+            string vatId = TestVatIdForMan;
+            var citizen1 = CitizenBuilder.NewMan().WithVatId(vatId).Build();
+            var citizen2 = CitizenBuilder.NewMan().WithVatId(vatId).Build();
+            registry.Register(citizen1);
+            registry.Register(citizen2);
+        }
 
-        //    registry.Register(citizen2);
-        //}
+        [TestMethod]
+        public void Register_ForCitizenWithEmptyVatId_AssignsVatId()
+        {
+            var citizen = CitizenBuilder.NewWoman().WithDate(SystemDateTime.Now()).Build();
+            registry.Register(citizen);
 
-        //[TestMethod]
-        //public void Register_ForCitizenWithEmptyVatId_AssignsVatId()
-        //{
-        //    var citizen = CitizenBuilder.NewWoman().WithDate(SystemDateTime.Now()).Build();
-        //    registry.Register(citizen);
+            Assert.IsFalse(String.IsNullOrWhiteSpace(citizen.VatId));
+        }
 
-        //    Assert.IsFalse(String.IsNullOrWhiteSpace(citizen.VatId));
-        //}
+        [TestMethod]
+        public void Register_ForCitizenWithEmptyVatId_AssignsVatIdBasedOnBirthDate()
+        {
+            var citizen = CitizenBuilder.NewWoman().WithDate(new DateTime(1991, 8, 24)).Build();
+            registry.Register(citizen);
 
-        //[TestMethod]
-        //public void Register_ForCitizenWithEmptyVatId_AssignsVatIdBasedOnBirthDate()
-        //{
-        //    var citizen = CitizenBuilder.NewWoman().WithDate(new DateTime(1991, 8, 24)).Build();
-        //    registry.Register(citizen);
+            StringAssert.StartsWith(citizen.VatId, "33473");
+        }
 
-        //    StringAssert.StartsWith(citizen.VatId, "33473");
-        //}
+        [TestMethod]
+        public void Register_ForManWithEmptyVatId_AssignsVatIdWithOddCounter()
+        {
+            var citizen = CitizenBuilder.NewMan().WithDate(TestBirthDate).Build();
+            registry.Register(citizen);
 
-        //[TestMethod]
-        //public void Register_ForManWithEmptyVatId_AssignsVatIdWithOddCounter()
-        //{
-        //    var citizen = CitizenBuilder.NewMan().WithDate(TestBirthDate).Build();
-        //    registry.Register(citizen);
+            int counter = Int32.Parse(citizen.VatId.Substring(5, 4));
+            Assert.AreEqual(1, counter & 1);
+        }
 
-        //    int counter = Int32.Parse(citizen.VatId.Substring(5, 4));
-        //    Assert.AreEqual(1, counter & 1);
-        //}
+        [TestMethod]
+        public void Register_ForWomanWithEmptyVatId_AssignsVatIdWithEvenCounter()
+        {
+            var citizen = CitizenBuilder.NewWoman().WithDate(TestBirthDate).Build();
+            registry.Register(citizen);
 
-        //[TestMethod]
-        //public void Register_ForWomanWithEmptyVatId_AssignsVatIdWithEvenCounter()
-        //{
-        //    var citizen = CitizenBuilder.NewWoman().WithDate(TestBirthDate).Build();
-        //    registry.Register(citizen);
+            int counter = Int32.Parse(citizen.VatId.Substring(5, 4));
+            Assert.AreEqual(0, counter & 1);
+        }
 
-        //    int counter = Int32.Parse(citizen.VatId.Substring(5, 4));
-        //    Assert.AreEqual(0, counter & 1);
-        //}
+        [TestMethod]
+        public void Register_ForTwoWomenWithSameBirthDate_AssignsDifferentVatIds()
+        {
+            var w1 = CitizenBuilder.NewWoman().WithDate(TestBirthDate).Build();
+            var w2 = CitizenBuilder.NewWoman().WithDate(TestBirthDate).Build();
+            registry.Register(w1);
+            registry.Register(w2);
 
-        //[TestMethod]
-        //public void Register_ForTwoWomenWithSameBirthDate_AssignsDifferentVatIds()
-        //{
-        //    var w1 = CitizenBuilder.NewWoman().WithDate(TestBirthDate).Build();
-        //    var w2 = CitizenBuilder.NewWoman().WithDate(TestBirthDate).Build();
-        //    registry.Register(w1);
-        //    registry.Register(w2);
+            Assert.AreNotEqual(w1.VatId, w2.VatId);
+        }
 
-        //    Assert.AreNotEqual(w1.VatId, w2.VatId);
-        //}
+        [TestMethod]
+        public void Register_ForCitizenWithEmptyVatId_AssignedVatIdContainsDigitsOnly()
+        {
+            var citizen = CitizenBuilder.NewWoman().WithDate(SystemDateTime.Now()).Build();
+            registry.Register(citizen);
 
-        //[TestMethod]
-        //public void Register_ForCitizenWithEmptyVatId_AssignedVatIdContainsDigitsOnly()
-        //{
-        //    var citizen = CitizenBuilder.NewWoman().WithDate(SystemDateTime.Now()).Build();
-        //    registry.Register(citizen);
+            StringAssert.Matches(citizen.VatId, new Regex("^[0-9]+$"));
+        }
 
-        //    StringAssert.Matches(citizen.VatId, new Regex("^[0-9]+$"));
-        //}
+        [TestMethod]
+        public void Register_ForCitizenWithEmptyVatId_AssignedVatIdIsTenCharsLength()
+        {
+            var citizen = CitizenBuilder.NewWoman().WithDate(new DateTime(1909, 7, 5)).Build();
+            registry.Register(citizen);
 
-        //[TestMethod]
-        //public void Register_ForCitizenWithEmptyVatId_AssignedVatIdIsTenCharsLength()
-        //{
-        //    var citizen = CitizenBuilder.NewWoman().WithDate(new DateTime(1909, 7, 5)).Build();
-        //    registry.Register(citizen);
-
-        //    Assert.AreEqual(10, citizen.VatId.Length);
-        //}
+            Assert.AreEqual(10, citizen.VatId.Length);
+        }
 
         //[TestMethod]
         //public void Indexer_WithRegisteredVatId_ReturnsCitizenFoundByVatId()
@@ -166,7 +165,7 @@
         private ICitizenRegistry CreateCitizenRegistry()
         {
             // TODO: return new instance of class that implements ICitizenRegistry
-            return default(ICitizenRegistry);
+            return new Registration();
         }
     }
 }
