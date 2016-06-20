@@ -38,5 +38,57 @@ namespace Citizens.Tests
 
             Assert.AreEqual(dateOnly, citizen.BirthDate);
         }
+
+        // my own tests
+
+        [TestMethod]
+        [ExpectedException(typeof(NullReferenceException))]
+        public void Constructor_WithEmptyLastName_ThrowsArgumentException()
+        {
+            var citizen = new Citizen("Roger", "", SystemDateTime.Now(), Gender.Male);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NullReferenceException))]
+        public void Constructor_WithNullLastName_ThrowsArgumentException()
+        {
+            var citizen = new Citizen("Roger", null, SystemDateTime.Now(), Gender.Male);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NullReferenceException))]
+        public void Constructor_WithOnlyWhiteSpacesLastName_ThrowsArgumentException()
+        {
+            var citizen = new Citizen("Roger", "     ", SystemDateTime.Now(), Gender.Male);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NullReferenceException))]
+        public void Constructor_WithEmptyFirstName_ThrowsArgumentException()
+        {
+            var citizen = new Citizen("", "Pierce", SystemDateTime.Now(), Gender.Male);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NullReferenceException))]
+        public void Constructor_WithNullFirstName_ThrowsArgumentException()
+        {
+            var citizen = new Citizen(null, "Pierce", SystemDateTime.Now(), Gender.Male);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NullReferenceException))]
+        public void Constructor_WithOnlyWhiteSpacesFirstName_ThrowsArgumentException()
+        {
+            var citizen = new Citizen("    ", "Pierce", SystemDateTime.Now(), Gender.Male);
+        }
+
+        [TestMethod]
+        public void Constructor_WithNeedlessWhiteSpacesInName_CorrectsName()
+        {
+            var citizen = new Citizen(" Roger  ", " Pierce  ", SystemDateTime.Now(), Gender.Male);
+            Assert.AreEqual("Roger", citizen.FirstName);
+            Assert.AreEqual("Pierce", citizen.LastName);
+        }
     }
 }
