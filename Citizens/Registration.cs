@@ -81,6 +81,11 @@
             res += string.Format("{0:d5}", citizen.BirthDate.Subtract(new DateTime(1899, 12, 31)).Days);
             int temp = ((citizen.Gender == Gender.Male) ? 1 : 0) +
                 (this.CountOfPeopleWithSameBirthDateAndGender(citizen) * 2);
+            if (temp > 9999)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
             res += string.Format("{0:d4}", temp);
             res += this.FindKey(res).ToString();
             return res;

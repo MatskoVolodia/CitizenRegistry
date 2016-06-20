@@ -162,6 +162,38 @@
             Assert.AreEqual("1 man and 0 women. Last registration was yesterday", msg);
         }
 
+        // my own tests
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void Register_MoreThan5kMenWithSameBirthDate_ExpectedArgumentOutOfRange()
+        {
+            for (int i = 0; i < 5001; i++)
+            {
+                var m = CitizenBuilder.NewMan().WithDate(TestBirthDate).Build();
+                registry.Register(m);
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NullReferenceException))]
+        public void Register_NullReferenceCitizen_ExpectedNullReferenceException()
+        {
+            registry.Register(null);
+        }
+
+        [TestMethod]
+        public void Stats_WithOneWomanInRegistry_ReturnsMessageZeroMenAndOneWomanWithLastRegistrationTimeInfo()
+        {
+            var bd = TestTodayDate.AddYears(-1);
+            var citizen = CitizenBuilder.NewWoman().WithDate(bd).Build();
+
+            registry.Register(citizen);
+
+            var msg = registry.Stats();
+            Assert.AreEqual("0 men and 1 woman. Last registration was now", msg);
+        }
+
         private ICitizenRegistry CreateCitizenRegistry()
         {
             // TODO: return new instance of class that implements ICitizenRegistry
