@@ -5,21 +5,30 @@
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
+    using Humanizer;
 
     public class Registration : ICitizenRegistry
     {
         private ICitizen[] registry;
+        private DateTime? lastUpdate;
 
         public Registration()
         {
             this.registry = new ICitizen[0];
+            this.lastUpdate = null;
         }
 
         public ICitizen this[string id]
         {
             get
             {
-                throw new NotImplementedException();
+                if (id == null)
+                {
+                    throw new ArgumentNullException();
+                }
+
+                int index = Array.FindIndex(this.registry, (x) => x.VatId == id);
+                return (index != -1) ? this.registry[index] : null;
             }
         }
 
@@ -32,12 +41,30 @@
                 citizen.VatId = this.CalculateValidVatID(citizen);
             }
 
-            this.registry[this.registry.Length - 1] = citizen;
+            this.registry[this.registry.Length - 1] =
+                new Citizen(citizen.FirstName, citizen.LastName, citizen.BirthDate, citizen.Gender)
+                { VatId = citizen.VatId };
+            this.lastUpdate = SystemDateTime.Now();
         }
 
         public string Stats()
         {
-            throw new NotImplementedException();
+            int countOfMen = this.registry.Count((x) => x.Gender == Gender.Male);
+            string res = string.Format(
+                "{0} {2} and {1} {3}",
+                countOfMen,
+                this.registry.Length - countOfMen,
+                countOfMen == 1 ? "man" : "man".Pluralize(), 
+                this.registry.Length - countOfMen == 1 ? "woman" : "woman".Pluralize());
+
+            if (this.lastUpdate != null)
+            {
+                res += string.Format(
+                    ". Last registration was {0}",
+                    DateTime.UtcNow.AddDays(((DateTime)this.lastUpdate).Subtract(SystemDateTime.Now()).Days).Humanize());
+            }
+
+            return res;
         }
 
         private void CheckForRepeats(ICitizen citizen)

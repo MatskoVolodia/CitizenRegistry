@@ -99,68 +99,68 @@
             Assert.AreEqual(10, citizen.VatId.Length);
         }
 
-        //[TestMethod]
-        //public void Indexer_WithRegisteredVatId_ReturnsCitizenFoundByVatId()
-        //{
-        //    var citizen = CitizenBuilder.NewMan().WithDate(SystemDateTime.Now()).Build();
-        //    registry.Register(citizen);
+        [TestMethod]
+        public void Indexer_WithRegisteredVatId_ReturnsCitizenFoundByVatId()
+        {
+            var citizen = CitizenBuilder.NewMan().WithDate(SystemDateTime.Now()).Build();
+            registry.Register(citizen);
 
-        //    ICitizen foundCitizen = registry[citizen.VatId];
+            ICitizen foundCitizen = registry[citizen.VatId];
 
-        //    Assert.AreEqual(citizen.VatId, foundCitizen.VatId);
-        //    Assert.AreEqual(citizen.FirstName, foundCitizen.FirstName);
-        //    Assert.AreEqual(citizen.LastName, foundCitizen.LastName);
-        //    Assert.AreEqual(citizen.BirthDate, foundCitizen.BirthDate);
-        //}
+            Assert.AreEqual(citizen.VatId, foundCitizen.VatId);
+            Assert.AreEqual(citizen.FirstName, foundCitizen.FirstName);
+            Assert.AreEqual(citizen.LastName, foundCitizen.LastName);
+            Assert.AreEqual(citizen.BirthDate, foundCitizen.BirthDate);
+        }
 
-        //[TestMethod]
-        //public void Indexer_WhenCitizenChanges_RegistryHasNoChanges()
-        //{
-        //    var citizen = CitizenBuilder.NewMan().WithDate(SystemDateTime.Now()).Build();
-        //    registry.Register(citizen);
+        [TestMethod]
+        public void Indexer_WhenCitizenChanges_RegistryHasNoChanges()
+        {
+            var citizen = CitizenBuilder.NewMan().WithDate(SystemDateTime.Now()).Build();
+            registry.Register(citizen);
 
-        //    string id = citizen.VatId;
-        //    citizen.VatId = "0123456789";
-        //    ICitizen foundCitizen = registry[id];
+            string id = citizen.VatId;
+            citizen.VatId = "0123456789";
+            ICitizen foundCitizen = registry[id];
 
-        //    Assert.AreNotEqual(citizen.VatId, foundCitizen.VatId);
-        //}
+            Assert.AreNotEqual(citizen.VatId, foundCitizen.VatId);
+        }
 
-        //[TestMethod]
-        //[ExpectedException(typeof(ArgumentNullException))]
-        //public void Indexer_WithNull_ThrowsArgumentNullException()
-        //{
-        //    var result = registry[null];
-        //}
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Indexer_WithNull_ThrowsArgumentNullException()
+        {
+            var result = registry[null];
+        }
 
-        //[TestMethod]
-        //public void Indexer_WithNotRegisteredVatId_ReturnsNull()
-        //{
-        //    var result = registry["0123456789"];
-        //    Assert.IsNull(result);
-        //}
+        [TestMethod]
+        public void Indexer_WithNotRegisteredVatId_ReturnsNull()
+        {
+            var result = registry["0123456789"];
+            Assert.IsNull(result);
+        }
 
-        //[TestMethod]
-        //public void Stats_WithEmptyRegistry_ReturnsMessageZeroMenAndZeroWomen()
-        //{
-        //    var msg = registry.Stats();
-        //    Assert.AreEqual("0 men and 0 women", msg);
-        //}
+        [TestMethod]
+        public void Stats_WithEmptyRegistry_ReturnsMessageZeroMenAndZeroWomen()
+        {
+            var msg = registry.Stats();
+            Assert.AreEqual("0 men and 0 women", msg);
+        }
 
-        //[TestMethod]
-        //public void Stats_WithOneManInRegistry_ReturnsMessageOneManAndZeroWomenWithLastRegistrationTimeInfo()
-        //{
-        //    var bd = TestTodayDate.AddYears(-1);
-        //    var citizen = CitizenBuilder.NewMan().WithDate(bd).Build();
+        [TestMethod]
+        public void Stats_WithOneManInRegistry_ReturnsMessageOneManAndZeroWomenWithLastRegistrationTimeInfo()
+        {
+            var bd = TestTodayDate.AddYears(-1);
+            var citizen = CitizenBuilder.NewMan().WithDate(bd).Build();
 
-        //    var yesterday = TestTodayDate.AddDays(-1);
-        //    SystemDateTime.Now = () => yesterday;
-        //    registry.Register(citizen);
-        //    SystemDateTime.Now = () => TestTodayDate;
+            var yesterday = TestTodayDate.AddDays(-1);
+            SystemDateTime.Now = () => yesterday;
+            registry.Register(citizen);
+            SystemDateTime.Now = () => TestTodayDate;
 
-        //    var msg = registry.Stats();
-        //    Assert.AreEqual("1 man and 0 women. Last registration was yesterday", msg);
-        //}
+            var msg = registry.Stats();
+            Assert.AreEqual("1 man and 0 women. Last registration was yesterday", msg);
+        }
 
         private ICitizenRegistry CreateCitizenRegistry()
         {
