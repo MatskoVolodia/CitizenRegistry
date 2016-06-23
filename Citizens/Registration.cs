@@ -9,6 +9,7 @@
 
     public class Registration : ICitizenRegistry
     {
+        private readonly DateTime rootDate;
         private ICitizen[] registry;
         private DateTime? lastUpdate;
 
@@ -16,7 +17,11 @@
         {
             this.registry = new ICitizen[0];
             this.lastUpdate = null;
+            this.rootDate = new DateTime(1899, 12, 31);
+            this.Count = 0;
         }
+
+        public int Count { get; private set; }
 
         public ICitizen this[string id]
         {
@@ -27,41 +32,44 @@
                     throw new ArgumentNullException();
                 }
 
-                int index = Array.FindIndex(this.registry, (x) => x.VatId == id);
-                return (index != -1) ? this.registry[index] : null;
+                return Array.Find(this.registry, (x) => x.VatId == id);
             }
         }
 
         public void Register(ICitizen citizen)
         {
             this.CheckForRepeats(citizen);
-            Array.Resize<ICitizen>(ref this.registry, this.registry.Length + 1);
+            if (this.Count == this.registry.Length)
+            {
+                Array.Resize(ref this.registry, this.NewCapacity());
+            }
+
             if (string.IsNullOrWhiteSpace(citizen.VatId))
             {
                 citizen.VatId = this.CalculateValidVatID(citizen);
             }
 
-            this.registry[this.registry.Length - 1] =
+            this.registry[this.Count] =
                 new Citizen(citizen.FirstName, citizen.LastName, citizen.BirthDate, citizen.Gender)
                 { VatId = citizen.VatId };
             this.lastUpdate = SystemDateTime.Now();
+            this.Count++;
         }
 
         public string Stats()
         {
             int countOfMen = this.registry.Count((x) => x.Gender == Gender.Male);
+
             string res = string.Format(
-                "{0} {2} and {1} {3}",
-                countOfMen,
-                this.registry.Length - countOfMen,
-                countOfMen == 1 ? "man" : "man".Pluralize(), 
-                this.registry.Length - countOfMen == 1 ? "woman" : "woman".Pluralize());
+                "{0} and {1}",
+                "man".ToQuantity(countOfMen),
+                "woman".ToQuantity(this.registry.Length - countOfMen));
 
             if (this.lastUpdate != null)
             {
                 res += string.Format(
                     ". Last registration was {0}",
-                    DateTime.UtcNow.AddDays(((DateTime)this.lastUpdate).Subtract(SystemDateTime.Now()).Days).Humanize());
+                    this.lastUpdate.Humanize(true, SystemDateTime.Now()));
             }
 
             return res;
@@ -69,7 +77,17 @@
 
         private void CheckForRepeats(ICitizen citizen)
         {
-            if (this.registry.Count((x) => x.VatId == citizen.VatId) > 0)
+            if (this.registry.Count((x) =>
+                        {
+                            if (x == null)
+                            {
+                                return false;
+                            }
+                            else
+                            {
+                                return x.VatId == citizen.VatId;
+                            }
+                        }) > 0)
             {
                 throw new InvalidOperationException();
             }
@@ -78,12 +96,14 @@
         private string CalculateValidVatID(ICitizen citizen)
         {
             string res = string.Empty;
-            res += string.Format("{0:d5}", citizen.BirthDate.Subtract(new DateTime(1899, 12, 31)).Days);
+            res += string.Format(
+                "{0:d5}",
+                citizen.BirthDate.Subtract(this.rootDate).Days);
             int temp = ((citizen.Gender == Gender.Male) ? 1 : 0) +
                 (this.CountOfPeopleWithSameBirthDateAndGender(citizen) * 2);
             if (temp > 9999)
             {
-                throw new ArgumentOutOfRangeException();
+                throw new InvalidOperationException("System doesn't allow to registy more than 5k people with the same date and gender");
             }
 
             res += string.Format("{0:d4}", temp);
@@ -121,6 +141,11 @@
                + (int.Parse(code[7].ToString()) * 5)
                + (int.Parse(code[8].ToString()) * 7);
             return (temp % 11) % 10;
+        }
+
+        private int NewCapacity()
+        {
+            return ((this.registry.Length * 3) / 2) + 1;
         }
     }
 }

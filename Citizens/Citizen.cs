@@ -35,7 +35,7 @@
             {
                 if (value.CompareTo(SystemDateTime.Now()) > 0)
                 {
-                    throw new ArgumentException();
+                    throw new ArgumentException("Date is greater than now.", "dateOfBirth");
                 }
 
                 this.birthDate = value.Date;
@@ -53,7 +53,7 @@
             {
                 if (string.IsNullOrEmpty(value) || string.IsNullOrWhiteSpace(value))
                 {
-                    throw new NullReferenceException();
+                    throw new ArgumentNullException();
                 }
 
                 this.firstName = value.Transform(To.TitleCase).Trim(' ');
@@ -69,9 +69,9 @@
 
             set
             {
-                if ((int)value < 0 || (int)value > 1)
+                if (!Enum.IsDefined(typeof(Gender), value))
                 {
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException(nameof(this.gender));
                 }
 
                 this.gender = value;
@@ -89,7 +89,7 @@
             {
                 if (string.IsNullOrEmpty(value) || string.IsNullOrWhiteSpace(value))
                 {
-                    throw new NullReferenceException();
+                    throw new ArgumentNullException();
                 }
 
                 this.lastName = value.Transform(To.TitleCase).Trim(' ');

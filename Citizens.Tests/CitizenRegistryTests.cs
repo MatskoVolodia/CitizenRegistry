@@ -165,8 +165,8 @@
         // my own tests
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
-        public void Register_MoreThan5kMenWithSameBirthDate_ExpectedArgumentOutOfRange()
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void Register_MoreThan5kMenWithSameBirthDate_ExpectedInvalidOperationException()
         {
             for (int i = 0; i < 5001; i++)
             {

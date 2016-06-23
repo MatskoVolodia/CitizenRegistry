@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace Citizens
+﻿namespace Citizens
 {
+    using System;
+
     public enum Gender
     {
         Female,

@@ -42,43 +42,43 @@ namespace Citizens.Tests
         // my own tests
 
         [TestMethod]
-        [ExpectedException(typeof(NullReferenceException))]
-        public void Constructor_WithEmptyLastName_ThrowsArgumentException()
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Constructor_WithEmptyLastName_ThrowsArgumentNullException()
         {
             var citizen = new Citizen("Roger", "", SystemDateTime.Now(), Gender.Male);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(NullReferenceException))]
-        public void Constructor_WithNullLastName_ThrowsArgumentException()
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Constructor_WithNullLastName_ThrowsArgumentNullException()
         {
             var citizen = new Citizen("Roger", null, SystemDateTime.Now(), Gender.Male);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(NullReferenceException))]
-        public void Constructor_WithOnlyWhiteSpacesLastName_ThrowsArgumentException()
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Constructor_WithOnlyWhiteSpacesLastName_ThrowsArgumentNullException()
         {
             var citizen = new Citizen("Roger", "     ", SystemDateTime.Now(), Gender.Male);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(NullReferenceException))]
-        public void Constructor_WithEmptyFirstName_ThrowsArgumentException()
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Constructor_WithEmptyFirstName_ThrowsArgumentNullException()
         {
             var citizen = new Citizen("", "Pierce", SystemDateTime.Now(), Gender.Male);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(NullReferenceException))]
-        public void Constructor_WithNullFirstName_ThrowsArgumentException()
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Constructor_WithNullFirstName_ThrowsArgumentNullException()
         {
             var citizen = new Citizen(null, "Pierce", SystemDateTime.Now(), Gender.Male);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(NullReferenceException))]
-        public void Constructor_WithOnlyWhiteSpacesFirstName_ThrowsArgumentException()
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Constructor_WithOnlyWhiteSpacesFirstName_ThrowsArgumentNullException()
         {
             var citizen = new Citizen("    ", "Pierce", SystemDateTime.Now(), Gender.Male);
         }
