@@ -41,7 +41,7 @@
             this.CheckForRepeats(citizen);
             if (this.Count == this.registry.Length)
             {
-                Array.Resize(ref this.registry, this.NewCapacity());
+                Array.Resize(ref this.registry, this.FindNewCapacity());
             }
 
             if (string.IsNullOrWhiteSpace(citizen.VatId))
@@ -143,7 +143,7 @@
             return (temp % 11) % 10;
         }
 
-        private int NewCapacity()
+        private int FindNewCapacity()
         {
             return ((this.registry.Length * 3) / 2) + 1;
         }
